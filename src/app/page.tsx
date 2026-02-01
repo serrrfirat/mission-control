@@ -25,6 +25,8 @@ export default function MissionControlPage() {
   } = useMissionControl();
 
   const [showChat, setShowChat] = useState(false);
+  const [showAgentsSidebar, setShowAgentsSidebar] = useState(false);
+  const [showLiveFeed, setShowLiveFeed] = useState(false);
 
   // Connect to SSE for real-time updates
   useSSE();
@@ -155,20 +157,38 @@ export default function MissionControlPage() {
       <Header />
 
       <div className="flex-1 flex overflow-hidden">
-        {/* Agents Sidebar */}
-        <AgentsSidebar />
+        {/* Agents Sidebar - hidden on mobile, toggle via state */}
+        <div className={`${showAgentsSidebar ? 'w-64' : 'w-0'} md:w-64 bg-mc-bg-secondary border-r border-mc-border flex flex-col transition-all duration-300 overflow-hidden`}>
+          <AgentsSidebar />
+        </div>
 
         {/* Main Content Area */}
-        <div className="flex-1 flex">
+        <div className="flex-1 flex flex-col min-w-0">
+          {/* Mobile toggle buttons */}
+          <div className="md:hidden flex gap-2 p-2 border-b border-mc-border bg-mc-bg-secondary">
+            <button
+              onClick={() => setShowAgentsSidebar(!showAgentsSidebar)}
+              className="flex-1 px-3 py-2 bg-mc-bg-tertiary rounded text-sm touch-manipulation"
+            >
+              👥 Agents
+            </button>
+            <button
+              onClick={() => setShowLiveFeed(!showLiveFeed)}
+              className="flex-1 px-3 py-2 bg-mc-bg-tertiary rounded text-sm touch-manipulation"
+            >
+              📡 Feed
+            </button>
+          </div>
+
           {/* Mission Queue */}
-          <div className="flex-1 flex flex-col">
+          <div className="flex-1 flex flex-col min-h-0">
             <MissionQueue />
 
-            {/* Chat Toggle */}
+            {/* Chat Toggle - desktop */}
             {!showChat && (
               <button
                 onClick={() => setShowChat(true)}
-                className="fixed bottom-4 right-96 px-4 py-2 bg-mc-accent text-mc-bg rounded-full shadow-lg hover:bg-mc-accent/90 flex items-center gap-2"
+                className="hidden md:flex fixed bottom-4 right-96 px-4 py-2 bg-mc-accent text-mc-bg rounded-full shadow-lg hover:bg-mc-accent/90 items-center gap-2"
               >
                 💬 Open Chat
               </button>
@@ -177,7 +197,7 @@ export default function MissionControlPage() {
 
           {/* Chat Panel (conditionally shown) */}
           {showChat && (
-            <div className="w-80 border-l border-mc-border relative">
+            <div className="w-full md:w-80 border-l border-mc-border relative flex flex-col">
               <button
                 onClick={() => setShowChat(false)}
                 className="absolute top-2 right-2 z-10 p-1 hover:bg-mc-bg-tertiary rounded text-mc-text-secondary"
@@ -189,8 +209,10 @@ export default function MissionControlPage() {
           )}
         </div>
 
-        {/* Live Feed */}
-        <LiveFeed />
+        {/* Live Feed - hidden on mobile unless toggled */}
+        <div className={`${showLiveFeed ? 'w-80' : 'w-0'} md:w-80 bg-mc-bg-secondary border-l border-mc-border flex flex-col transition-all duration-300 overflow-hidden`}>
+          <LiveFeed />
+        </div>
       </div>
 
       {/* Debug Panel - only shows when debug mode enabled */}

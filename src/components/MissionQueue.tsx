@@ -90,13 +90,13 @@ export function MissionQueue() {
       </div>
 
       {/* Kanban Columns */}
-      <div className="flex-1 flex gap-3 p-3 overflow-x-auto">
+      <div className="flex-1 flex gap-2 md:gap-3 p-2 md:p-3 overflow-x-auto">
         {COLUMNS.map((column) => {
           const columnTasks = getTasksByStatus(column.id);
           return (
             <div
               key={column.id}
-              className={`flex-1 min-w-[200px] max-w-[280px] flex flex-col bg-mc-bg rounded border border-mc-border border-t-2 ${column.color}`}
+              className={`flex-1 min-w-[160px] md:min-w-[200px] max-w-[240px] md:max-w-[280px] flex flex-col bg-mc-bg rounded border border-mc-border border-t-2 ${column.color}`}
               onDragOver={handleDragOver}
               onDrop={(e) => handleDrop(e, column.id)}
             >
@@ -158,16 +158,16 @@ function TaskCard({ task, onDragStart, onClick, isDragging }: TaskCardProps) {
       draggable
       onDragStart={(e) => onDragStart(e, task)}
       onClick={onClick}
-      className={`bg-mc-bg-secondary border border-mc-border rounded p-3 cursor-pointer hover:border-mc-accent/50 transition-all ${
+      className={`bg-mc-bg-secondary border border-mc-border rounded p-2 md:p-3 cursor-pointer hover:border-mc-accent/50 transition-all touch-manipulation ${
         isDragging ? 'opacity-50 scale-95' : ''
       }`}
     >
       <div className="flex items-start gap-2">
-        <GripVertical className="w-4 h-4 text-mc-text-secondary mt-0.5 cursor-grab" />
+        <GripVertical className="w-4 h-4 text-mc-text-secondary mt-0.5 cursor-grab shrink-0" />
         <div className="flex-1 min-w-0">
           <h4 className="text-sm font-medium truncate">{task.title}</h4>
           {task.assigned_agent && (
-            <div className="flex items-center gap-1 mt-2">
+            <div className="flex items-center gap-1 mt-1 md:mt-2">
               <span className="text-sm">{(task.assigned_agent as unknown as { avatar_emoji: string }).avatar_emoji}</span>
               <span className="text-xs text-mc-text-secondary truncate">
                 {(task.assigned_agent as unknown as { name: string }).name}
@@ -180,7 +180,7 @@ function TaskCard({ task, onDragStart, onClick, isDragging }: TaskCardProps) {
             >
               {task.priority}
             </span>
-            <span className="text-xs text-mc-text-secondary">
+            <span className="text-xs text-mc-text-secondary shrink-0 ml-2">
               {formatDistanceToNow(new Date(task.created_at), { addSuffix: true })}
             </span>
           </div>

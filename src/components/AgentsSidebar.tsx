@@ -106,10 +106,10 @@ export function AgentsSidebar() {
   };
 
   return (
-    <aside className="w-64 bg-mc-bg-secondary border-r border-mc-border flex flex-col">
+    <aside className="w-full h-full bg-mc-bg-secondary flex flex-col">
       {/* Header */}
-      <div className="p-3 border-b border-mc-border">
-        <div className="flex items-center justify-between mb-3">
+      <div className="p-2 md:p-3 border-b border-mc-border">
+        <div className="flex items-center justify-between mb-2 md:mb-3">
           <div className="flex items-center gap-2">
             <ChevronRight className="w-4 h-4 text-mc-text-secondary" />
             <span className="text-sm font-medium uppercase tracking-wider">Agents</span>
@@ -121,8 +121,8 @@ export function AgentsSidebar() {
 
         {/* Active Sub-Agents Counter */}
         {activeSubAgents > 0 && (
-          <div className="mb-3 px-3 py-2 bg-green-500/10 border border-green-500/20 rounded-lg">
-            <div className="flex items-center gap-2 text-sm">
+          <div className="mb-2 md:mb-3 px-2 md:px-3 py-2 bg-green-500/10 border border-green-500/20 rounded-lg">
+            <div className="flex items-center gap-2 text-xs md:text-sm">
               <span className="text-green-400">●</span>
               <span className="text-mc-text">Active Sub-Agents:</span>
               <span className="font-bold text-green-400">{activeSubAgents}</span>
@@ -136,7 +136,7 @@ export function AgentsSidebar() {
             <button
               key={tab}
               onClick={() => setFilter(tab)}
-              className={`px-3 py-1 text-xs rounded uppercase ${
+              className={`flex-1 px-2 py-1 text-xs rounded uppercase ${
                 filter === tab
                   ? 'bg-mc-accent text-mc-bg font-medium'
                   : 'text-mc-text-secondary hover:bg-mc-bg-tertiary'
@@ -149,7 +149,7 @@ export function AgentsSidebar() {
       </div>
 
       {/* Agent List */}
-      <div className="flex-1 overflow-y-auto p-2 space-y-1">
+      <div className="flex-1 overflow-y-auto p-1 md:p-2 space-y-1">
         {filteredAgents.map((agent) => {
           const openclawSession = agentOpenClawSessions[agent.id];
           const isConnecting = connectingAgentId === agent.id;
@@ -166,22 +166,22 @@ export function AgentsSidebar() {
                   setSelectedAgent(agent);
                   setEditingAgent(agent);
                 }}
-                className="w-full flex items-center gap-3 p-2 text-left"
+                className="w-full flex items-center gap-2 md:gap-3 p-2 text-left touch-manipulation"
               >
                 {/* Avatar */}
-                <div className="text-2xl relative">
+                <div className="text-xl md:text-2xl relative shrink-0">
                   {agent.avatar_emoji}
                   {openclawSession && (
-                    <span className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-mc-bg-secondary" />
+                    <span className="absolute -bottom-1 -right-1 w-2.5 h-2.5 md:w-3 md:h-3 bg-green-500 rounded-full border-2 border-mc-bg-secondary" />
                   )}
                 </div>
 
                 {/* Info */}
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1 md:gap-2">
                     <span className="font-medium text-sm truncate">{agent.name}</span>
                     {agent.is_master && (
-                      <span className="text-xs text-mc-accent-yellow">★</span>
+                      <span className="text-xs text-mc-accent-yellow shrink-0">★</span>
                     )}
                   </div>
                   <div className="text-xs text-mc-text-secondary truncate">
@@ -191,7 +191,7 @@ export function AgentsSidebar() {
 
                 {/* Status */}
                 <span
-                  className={`text-xs px-2 py-0.5 rounded uppercase ${getStatusBadge(
+                  className={`text-xs px-1.5 md:px-2 py-0.5 rounded uppercase shrink-0 ${getStatusBadge(
                     agent.status
                   )}`}
                 >
@@ -205,7 +205,7 @@ export function AgentsSidebar() {
                   <button
                     onClick={(e) => handleConnectToOpenClaw(agent, e)}
                     disabled={isConnecting}
-                    className={`w-full flex items-center justify-center gap-2 px-2 py-1 rounded text-xs transition-colors ${
+                    className={`w-full flex items-center justify-center gap-1 md:gap-2 px-2 py-1.5 rounded text-xs transition-colors touch-manipulation ${
                       openclawSession
                         ? 'bg-green-500/20 text-green-400 hover:bg-green-500/30'
                         : 'bg-mc-bg text-mc-text-secondary hover:bg-mc-bg-tertiary hover:text-mc-text'
@@ -219,12 +219,14 @@ export function AgentsSidebar() {
                     ) : openclawSession ? (
                       <>
                         <Zap className="w-3 h-3" />
-                        <span>OpenClaw Connected</span>
+                        <span className="hidden md:inline">OpenClaw Connected</span>
+                        <span className="md:hidden">Connected</span>
                       </>
                     ) : (
                       <>
                         <ZapOff className="w-3 h-3" />
-                        <span>Connect to OpenClaw</span>
+                        <span className="hidden md:inline">Connect to OpenClaw</span>
+                        <span className="md:hidden">Connect</span>
                       </>
                     )}
                   </button>
@@ -236,10 +238,10 @@ export function AgentsSidebar() {
       </div>
 
       {/* Add Agent Button */}
-      <div className="p-3 border-t border-mc-border">
+      <div className="p-2 md:p-3 border-t border-mc-border">
         <button
           onClick={() => setShowCreateModal(true)}
-          className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-mc-bg-tertiary hover:bg-mc-border rounded text-sm text-mc-text-secondary hover:text-mc-text transition-colors"
+          className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-mc-bg-tertiary hover:bg-mc-border rounded text-sm text-mc-text-secondary hover:text-mc-text transition-colors touch-manipulation"
         >
           <Plus className="w-4 h-4" />
           Add Agent

@@ -64,10 +64,10 @@ export function LiveFeed() {
   };
 
   return (
-    <aside className="w-80 bg-mc-bg-secondary border-l border-mc-border flex flex-col">
+    <aside className="w-full h-full bg-mc-bg-secondary flex flex-col">
       {/* Header */}
-      <div className="p-3 border-b border-mc-border">
-        <div className="flex items-center gap-2 mb-3">
+      <div className="p-2 md:p-3 border-b border-mc-border">
+        <div className="flex items-center gap-2 mb-2 md:mb-3">
           <ChevronRight className="w-4 h-4 text-mc-text-secondary" />
           <span className="text-sm font-medium uppercase tracking-wider">Live Feed</span>
         </div>
@@ -78,7 +78,7 @@ export function LiveFeed() {
             <button
               key={tab}
               onClick={() => setFilter(tab)}
-              className={`px-3 py-1 text-xs rounded uppercase ${
+              className={`flex-1 px-2 py-1 text-xs rounded uppercase ${
                 filter === tab
                   ? 'bg-mc-accent text-mc-bg font-medium'
                   : 'text-mc-text-secondary hover:bg-mc-bg-tertiary'
@@ -135,21 +135,23 @@ function EventItem({ event }: { event: Event }) {
 
   return (
     <div
-      className={`p-2 rounded border-l-2 animate-slide-in ${
+      className={`p-2 rounded border-l-2 animate-slide-in touch-manipulation ${
         isHighlight
           ? 'bg-mc-bg-tertiary border-mc-accent-pink'
           : 'bg-transparent border-transparent hover:bg-mc-bg-tertiary'
       }`}
     >
       <div className="flex items-start gap-2">
-        <span className="text-sm">{getEventIcon(event.type)}</span>
+        <span className="text-lg shrink-0">{getEventIcon(event.type)}</span>
         <div className="flex-1 min-w-0">
           <p className={`text-sm ${isTaskEvent ? 'text-mc-accent-pink' : 'text-mc-text'}`}>
             {event.message}
           </p>
           <div className="flex items-center gap-1 mt-1 text-xs text-mc-text-secondary">
-            <Clock className="w-3 h-3" />
-            {formatDistanceToNow(new Date(event.created_at), { addSuffix: true })}
+            <Clock className="w-3 h-3 shrink-0" />
+            <span className="truncate">
+              {formatDistanceToNow(new Date(event.created_at), { addSuffix: true })}
+            </span>
           </div>
         </div>
       </div>
