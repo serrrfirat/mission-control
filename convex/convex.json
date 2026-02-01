@@ -1,0 +1,9 @@
+{
+  "name": "mission-control",
+  "typescript": true,
+  "auth": {
+    "enabled": false
+  },
+  "functions": "convex/",
+  "schema": "convex/schema.ts"
+}
