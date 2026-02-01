@@ -1,8 +1,8 @@
 # OpenClaw Cron Configuration for Multi-Agent System
-# Run: clawdbot cron add [options]
+# Run: openclaw cron add [options]
 
 # Jarvis - Squad Lead (:00)
-clawdbot cron add \
+openclaw cron add \
   --name "jarvis-heartbeat" \
   --cron "0,15,30,45 * * * *" \
   --session "isolated" \
@@ -10,7 +10,7 @@ clawdbot cron add \
   --sessionTarget "isolated"
 
 # Shuri - Product Analyst (:02)
-clawdbot cron add \
+openclaw cron add \
   --name "shuri-heartbeat" \
   --cron "2,17,32,47 * * * *" \
   --session "isolated" \
@@ -18,7 +18,7 @@ clawdbot cron add \
   --sessionTarget "isolated"
 
 # Friday - Developer (:04)
-clawdbot cron add \
+openclaw cron add \
   --name "friday-heartbeat" \
   --cron "4,19,34,49 * * * *" \
   --session "isolated" \
@@ -26,7 +26,7 @@ clawdbot cron add \
   --sessionTarget "isolated"
 
 # Loki - Content Writer (:06)
-clawdbot cron add \
+openclaw cron add \
   --name "loki-heartbeat" \
   --cron "6,21,36,51 * * * *" \
   --session "isolated" \
@@ -34,7 +34,7 @@ clawdbot cron add \
   --sessionTarget "isolated"
 
 # Wanda - Designer (:08)
-clawdbot cron add \
+openclaw cron add \
   --name "wanda-heartbeat" \
   --cron "8,23,38,53 * * * *" \
   --session "isolated" \
@@ -42,7 +42,7 @@ clawdbot cron add \
   --sessionTarget "isolated"
 
 # Vision - SEO Analyst (:10)
-clawdbot cron add \
+openclaw cron add \
   --name "vision-heartbeat" \
   --cron "10,25,40,55 * * * *" \
   --session "isolated" \
@@ -50,7 +50,7 @@ clawdbot cron add \
   --sessionTarget "isolated"
 
 # Fury - Customer Researcher (:12)
-clawdbot cron add \
+openclaw cron add \
   --name "fury-heartbeat" \
   --cron "12,27,42,57 * * * *" \
   --session "isolated" \
@@ -58,7 +58,7 @@ clawdbot cron add \
   --sessionTarget "isolated"
 
 # Quill - Social Media Manager (:14)
-clawdbot cron add \
+openclaw cron add \
   --name "quill-heartbeat" \
   --cron "14,29,44,59 * * * *" \
   --session "isolated" \
@@ -66,7 +66,7 @@ clawdbot cron add \
   --sessionTarget "isolated"
 
 # Pepper - Email Marketing (:16)
-clawdbot cron add \
+openclaw cron add \
   --name "pepper-heartbeat" \
   --cron "16,31,46 * * * *" \
   --session "isolated" \
@@ -74,7 +74,7 @@ clawdbot cron add \
   --sessionTarget "isolated"
 
 # Wong - Documentation (:18)
-clawdbot cron add \
+openclaw cron add \
   --name "wong-heartbeat" \
   --cron "18,33,48 * * * *" \
   --session "isolated" \
@@ -82,7 +82,7 @@ clawdbot cron add \
   --sessionTarget "isolated"
 
 # Daily Standup - Jarvis generates at 11:30 PM Dubai time (19:30 UTC)
-clawdbot cron add \
+openclaw cron add \
   --name "daily-standup" \
   --cron "30 19 * * *" \
   --session "agent:main:main" \
