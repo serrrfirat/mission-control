@@ -84,22 +84,23 @@ Skills are specialized tools you can invoke. Each agent has role-relevant skills
 
 | Agent | Skills | What They Do |
 |-------|--------|-------------|
-| Jarvis | `claw-conductor`, `self-reflect` | Multi-model orchestration, self-improvement |
-| Shuri | `marketing-psychology` | Consumer psychology frameworks for product analysis |
-| Friday | `test-driven-development`, `frontend-design`, `superdesign` | TDD workflow, frontend patterns, UI generation |
+| Jarvis | `claw-conductor`, `self-reflect`, `find-skills` | Multi-model orchestration, self-improvement, discover new skills |
+| Shuri | `marketing-psychology`, `agent-browser` | Consumer psychology frameworks, browser-based testing |
+| Friday | `test-driven-development`, `frontend-design`, `superdesign`, `vercel-react-best-practices`, `turborepo` | TDD workflow, frontend patterns, UI generation, React best practices, monorepo tooling |
 | Loki | `prompt-optimizer`, `humanizer` | Optimize prompts, make AI text sound natural |
-| Wanda | `superdesign`, `frontend-design` | Generate UI designs, frontend component patterns |
-| Vision | `self-reflect` | Analyze and improve own SEO strategies |
-| Fury | `self-reflect` | Deep research with self-improvement loop |
+| Wanda | `superdesign`, `frontend-design`, `remotion-best-practices`, `ai-video-generation` | UI design, frontend patterns, video/motion design |
+| Vision | `self-reflect`, `agent-browser` | SEO strategy analysis, browser-based auditing |
+| Fury | `self-reflect`, `agent-browser` | Deep research with self-improvement, browser-based research |
 | Quill | `marketing-psychology`, `humanizer` | Psychology-driven hooks, natural social copy |
 | Pepper | `agentmail`, `marketing-psychology` | Send emails via API, lifecycle psychology |
-| Wong | `self-reflect` | Improve documentation through reflection |
+| Wong | `self-reflect`, `skill-creator` | Documentation improvement, create new skills |
 
 **How to use a skill:** Just reference it naturally. The system will invoke it. Example: "Use the superdesign skill to generate a landing page mockup."
 
-**Skill locations:**
-- Workspace skills: `~/.openclaw/workspace/skills/`
-- System skills: `~/.openclaw/skills/`
+**Skill locations (all three are searched):**
+- Workspace skills: `~/.openclaw/workspace/skills/` (agentmail, auto-updater, claw-conductor, moltguard, polytrading, prompt-optimizer, self-reflect, superdesign, trein)
+- Agent skills: `~/.agents/skills/` = `~/.claude/skills/` (agent-browser, agentation, ai-video-generation, create-auth-skill, domain-name-brainstormer, figlet-text-converter, find-skills, frontend-design, gepetto, humanizer, marketing-psychology, referral-program, remotion-best-practices, skill-creator, superdesign, test-driven-development, turborepo, vercel-react-best-practices, vercel-react-native-skills)
+- System skills: `~/.openclaw/skills/` (same set as agent skills)
 
 ## Communication
 
@@ -124,17 +125,11 @@ Only use this for time-sensitive communication. Everything else goes through tas
 ### Session Keys
 
 ```
-agent:main:cron:f2d55be7-3932-46a3-b830-810b7f375af0       → Jarvis
-agent:main:cron:012618a6-6196-4493-9a1f-80eaf0573652       → Shuri
-agent:main:cron:d0291808-9ddb-4277-8a98-339651bf62ec       → Friday
-agent:main:cron:af7c0b7c-0d62-48c1-9ba0-09943e537540       → Loki
-agent:main:cron:8c1eadf6-cecf-4fea-8772-d8504e9f1d35       → Wanda
-agent:main:cron:a010dd8f-1348-4409-95b4-954f29c6578c       → Vision
-agent:main:cron:0be0e054-27be-4f17-a10f-8fff8e51f88b       → Fury
-agent:main:cron:669cc5f5-ce1b-4329-a50f-a30fca9b9319       → Quill
-agent:main:cron:e6d44c0e-862b-4572-a6a3-69fbf4ae3ed3       → Pepper
-agent:main:cron:b5ac7691-b7b6-4c94-a016-55aadbd610a4       → Wong
+agent:main:cron:64647616-1fab-40a7-b35a-a50866fbeafd       → Jarvis
+agent:main:cron:451b4d6f-ff2f-4000-ab3e-831e54e0d195       → Friday
 ```
+
+Note: Session keys for other agents will be added when their heartbeat cron jobs are created.
 
 ## Heartbeat Protocol
 
