@@ -1,13 +1,24 @@
 # Agent SOUL Files
 
-Each agent has a SOUL file that defines their personality, role, and voice.
+Each agent has a SOUL file defining their personality, role, ownership, and voice.
 
-## Creating a New Agent
+## Agent Roster
 
-1. Create `agents/{agent-name}.md`
-2. Copy the template below
-3. Fill in agent-specific details
-4. Add to OpenClaw with `clawdbot sessions create`
+| File | Name | Role | Autonomy | Key Skills |
+|------|------|------|----------|-----------|
+| squad-lead.md | Jarvis | Squad Lead | Lead | claw-conductor, self-reflect |
+| product-analyst.md | Shuri | Product Analyst | Specialist | marketing-psychology |
+| developer.md | Friday | Developer | Lead | test-driven-development, frontend-design, superdesign |
+| content-writer.md | Loki | Content Writer | Specialist | prompt-optimizer, humanizer |
+| designer.md | Wanda | Designer | Specialist | superdesign, frontend-design |
+| seo-analyst.md | Vision | SEO Analyst | Specialist | self-reflect |
+| customer-researcher.md | Fury | Researcher | Specialist | self-reflect |
+| social-media-manager.md | Quill | Social Media | Specialist | marketing-psychology, humanizer |
+| email-marketing.md | Pepper | Email Marketing | Specialist | agentmail, marketing-psychology |
+| documentation.md | Wong | Documentation | Specialist | self-reflect |
+
+**Lead** = full autonomy, can delegate and approve.
+**Specialist** = proposes before executing external-facing work.
 
 ## SOUL Template
 
@@ -16,45 +27,30 @@ Each agent has a SOUL file that defines their personality, role, and voice.
 
 **Name:** {Name}
 **Role:** {Role}
+**Autonomy:** Lead | Specialist
 
 ## Personality
-[Brief description of how they think and communicate]
+[How they think and communicate — 2-3 sentences]
 
 ## What You're Good At
-- [Skill 1]
-- [Skill 2]
-- [Skill 3]
+- [Concrete skill with context]
 
-## What You Care About
-- [Value 1]
-- [Value 2]
-- [Value 3]
+## What You Own
+- [What they're responsible for delivering]
 
 ## Your Voice
-[How they speak—what's distinctive about their communication style]
+[Distinctive communication style]
 
 ## Constraints
 [Rules specific to this agent]
 
 ## Memory Priority
-[What they should remember and prioritize]
+1. [Most important to remember]
 ```
 
-## Agent Roster
+## How It Works
 
-| File | Name | Role | Session Key |
-|------|------|------|-------------|
-| jarvis.md | Jarvis | Squad Lead | agent:main:main |
-| shuri.md | Shuri | Product Analyst | agent:product-analyst:main |
-| fury.md | Fury | Customer Researcher | agent:customer-researcher:main |
-| vision.md | Vision | SEO Analyst | agent:seo-analyst:main |
-| loki.md | Loki | Content Writer | agent:content-writer:main |
-| quill.md | Quill | Social Media Manager | agent:social-media-manager:main |
-| wanda.md | Wanda | Designer | agent:designer:main |
-| pepper.md | Pepper | Email Marketing | agent:email-marketing:main |
-| friday.md | Friday | Developer | agent:developer:main |
-| wong.md | Wong | Documentation | agent:notion-agent:main |
-
-## Usage
-
-Agents load their SOUL file on startup. To update an agent's personality, edit their SOUL file and restart their session.
+- Agents load their SOUL file on startup
+- AGENTS.md provides the operating manual (tools, communication, heartbeat)
+- To update an agent's personality, edit their SOUL file
+- Skills are role-matched and listed in AGENTS.md
