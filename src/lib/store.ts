@@ -1,157 +1,88 @@
 'use client';
 
 import { create } from 'zustand';
-import { debug } from './debug';
-import type { Agent, Task, Conversation, Message, Event, TaskStatus, OpenClawSession } from './types';
+import { persist } from 'zustand/middleware';
+import type { FeedItem, Agent, CronJob } from './types';
+import { AGENT_ROSTER } from './agents';
 
-interface MissionControlState {
-  // Data
-  agents: Agent[];
-  tasks: Task[];
-  conversations: Conversation[];
-  events: Event[];
-  currentConversation: Conversation | null;
-  messages: Message[];
-
-  // OpenClaw state
-  agentOpenClawSessions: Record<string, OpenClawSession | null>; // agentId -> session
-  openclawMessages: Message[]; // Messages from OpenClaw (displayed alongside regular messages)
-
-  // UI State
-  selectedAgent: Agent | null;
-  selectedTask: Task | null;
-  isOnline: boolean;
-  isLoading: boolean;
-  selectedBusiness: string;
-
-  // Actions
-  setAgents: (agents: Agent[]) => void;
-  setTasks: (tasks: Task[]) => void;
-  setConversations: (conversations: Conversation[]) => void;
-  setEvents: (events: Event[]) => void;
-  addEvent: (event: Event) => void;
-  setCurrentConversation: (conversation: Conversation | null) => void;
-  setMessages: (messages: Message[]) => void;
-  addMessage: (message: Message) => void;
-  setSelectedAgent: (agent: Agent | null) => void;
-  setSelectedTask: (task: Task | null) => void;
-  setIsOnline: (online: boolean) => void;
-  setIsLoading: (loading: boolean) => void;
-  setSelectedBusiness: (business: string) => void;
-
-  // Task mutations
-  updateTaskStatus: (taskId: string, status: TaskStatus) => void;
-  updateTask: (task: Task) => void;
-  addTask: (task: Task) => void;
-
-  // Agent mutations
-  updateAgent: (agent: Agent) => void;
-  addAgent: (agent: Agent) => void;
-
-  // OpenClaw actions
-  setAgentOpenClawSession: (agentId: string, session: OpenClawSession | null) => void;
-  setOpenclawMessages: (messages: Message[]) => void;
-  addOpenclawMessage: (message: Message) => void;
+interface AgentOverrides {
+  [agentId: string]: { name?: string; role?: string; emoji?: string };
 }
 
-export const useMissionControl = create<MissionControlState>((set) => ({
-  // Initial state
-  agents: [],
-  tasks: [],
-  conversations: [],
-  events: [],
-  currentConversation: null,
-  messages: [],
-  agentOpenClawSessions: {},
-  openclawMessages: [],
-  selectedAgent: null,
-  selectedTask: null,
-  isOnline: false,
-  isLoading: true,
-  selectedBusiness: 'all',
+interface AppState {
+  // Gateway connection
+  gatewayOnline: boolean;
+  setGatewayOnline: (online: boolean) => void;
 
-  // Setters
-  setAgents: (agents) => set({ agents }),
-  setTasks: (tasks) => {
-    debug.store('setTasks called', { count: tasks.length });
-    set({ tasks });
-  },
-  setConversations: (conversations) => set({ conversations }),
-  setEvents: (events) => set({ events }),
-  addEvent: (event) =>
-    set((state) => ({ events: [event, ...state.events].slice(0, 100) })),
-  setCurrentConversation: (conversation) => set({ currentConversation: conversation }),
-  setMessages: (messages) => set({ messages }),
-  addMessage: (message) =>
-    set((state) => ({ messages: [...state.messages, message] })),
-  setSelectedAgent: (agent) => set({ selectedAgent: agent }),
-  setSelectedTask: (task) => {
-    debug.store('setSelectedTask called', { id: task?.id, status: task?.status });
-    set({ selectedTask: task });
-  },
-  setIsOnline: (online) => {
-    debug.store('setIsOnline called', { online });
-    set({ isOnline: online });
-  },
-  setIsLoading: (loading) => set({ isLoading: loading }),
-  setSelectedBusiness: (business) => set({ selectedBusiness: business }),
+  // Agents
+  agents: Agent[];
+  updateAgent: (id: string, updates: Partial<Agent>) => void;
+  setAgents: (agents: Agent[]) => void;
 
-  // Task mutations
-  updateTaskStatus: (taskId, status) => {
-    debug.store('updateTaskStatus called', { taskId, status });
-    set((state) => ({
-      tasks: state.tasks.map((task) =>
-        task.id === taskId ? { ...task, status } : task
-      ),
-    }));
-  },
-  updateTask: (updatedTask) => {
-    debug.store('updateTask called', { id: updatedTask.id, status: updatedTask.status });
-    set((state) => {
-      const oldTask = state.tasks.find(t => t.id === updatedTask.id);
-      if (oldTask) {
-        debug.store('Task state change', {
-          id: updatedTask.id,
-          oldStatus: oldTask.status,
-          newStatus: updatedTask.status
-        });
-      } else {
-        debug.store('Task not found in store, adding', { id: updatedTask.id });
-      }
-      return {
-        tasks: state.tasks.map((task) =>
-          task.id === updatedTask.id ? updatedTask : task
-        ),
-      };
-    });
-  },
-  addTask: (task) => {
-    debug.store('addTask called', { id: task.id, title: task.title });
-    set((state) => {
-      // Dedupe: don't add if already exists
-      if (state.tasks.some((t) => t.id === task.id)) {
-        debug.store('Task already exists, skipping add', { id: task.id });
-        return state;
-      }
-      return { tasks: [task, ...state.tasks] };
-    });
-  },
+  // Agent identity overrides (persisted)
+  agentOverrides: AgentOverrides;
+  updateAgentOverride: (id: string, overrides: { name?: string; role?: string; emoji?: string }) => void;
 
-  // Agent mutations
-  updateAgent: (updatedAgent) =>
-    set((state) => ({
-      agents: state.agents.map((agent) =>
-        agent.id === updatedAgent.id ? updatedAgent : agent
-      ),
-    })),
-  addAgent: (agent) => set((state) => ({ agents: [...state.agents, agent] })),
+  // Feed (gateway events — Convex activities are merged at component level)
+  feedItems: FeedItem[];
+  addFeedItem: (item: FeedItem) => void;
+  setFeedItems: (items: FeedItem[]) => void;
 
-  // OpenClaw actions
-  setAgentOpenClawSession: (agentId, session) =>
-    set((state) => ({
-      agentOpenClawSessions: { ...state.agentOpenClawSessions, [agentId]: session },
-    })),
-  setOpenclawMessages: (messages) => set({ openclawMessages: messages }),
-  addOpenclawMessage: (message) =>
-    set((state) => ({ openclawMessages: [...state.openclawMessages, message] })),
-}));
+  // Cron jobs
+  cronJobs: CronJob[];
+  setCronJobs: (jobs: CronJob[]) => void;
+}
+
+export const useStore = create<AppState>()(
+  persist(
+    (set) => ({
+      gatewayOnline: false,
+      setGatewayOnline: (online) => set({ gatewayOnline: online }),
+
+      agents: AGENT_ROSTER,
+      updateAgent: (id, updates) =>
+        set((s) => ({
+          agents: s.agents.map((a) => (a.id === id ? { ...a, ...updates } : a)),
+        })),
+      setAgents: (agents) => set({ agents }),
+
+      agentOverrides: {},
+      updateAgentOverride: (id, overrides) =>
+        set((s) => {
+          const newOverrides = {
+            ...s.agentOverrides,
+            [id]: { ...s.agentOverrides[id], ...overrides },
+          };
+          const agents = s.agents.map((a) =>
+            a.id === id ? { ...a, ...overrides } : a
+          );
+          return { agentOverrides: newOverrides, agents };
+        }),
+
+      feedItems: [],
+      addFeedItem: (item) =>
+        set((s) => ({
+          feedItems: [...s.feedItems, item].slice(-500),
+        })),
+      setFeedItems: (items) => set({ feedItems: items }),
+
+      cronJobs: [],
+      setCronJobs: (jobs) => set({ cronJobs: jobs }),
+    }),
+    {
+      name: 'claw-control-storage',
+      partialize: (state) => ({
+        agentOverrides: state.agentOverrides,
+      }),
+      merge: (persisted, current) => {
+        const p = persisted as Partial<AppState> | undefined;
+        if (!p) return current;
+        const overrides = p.agentOverrides || {};
+        const agents = current.agents.map((a) =>
+          overrides[a.id] ? { ...a, ...overrides[a.id] } : a
+        );
+        return { ...current, ...p, agents };
+      },
+    }
+  )
+);

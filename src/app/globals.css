@@ -1,137 +1,137 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-:root {
-  --mc-bg: #0d1117;
-  --mc-bg-secondary: #161b22;
-  --mc-bg-tertiary: #21262d;
-  --mc-border: #30363d;
-  --mc-text: #c9d1d9;
-  --mc-text-secondary: #8b949e;
-  --mc-accent: #58a6ff;
-  --mc-accent-green: #3fb950;
-  --mc-accent-yellow: #d29922;
-  --mc-accent-red: #f85149;
-  --mc-accent-purple: #a371f7;
-  --mc-accent-pink: #db61a2;
-  --mc-accent-cyan: #39d353;
+@font-face {
+  font-family: 'Playfair Display';
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url('https://fonts.gstatic.com/s/playfairdisplay/v37/nuFRD-vYSZviVYUb_rj3ij__anPXDTnCjmHKM4nYO7KN_qiTbtbK-F2rA0s.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url('https://fonts.gstatic.com/s/inter/v18/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://fonts.gstatic.com/s/jetbrainsmono/v20/tDbY2o-flEEny0FPpRFmEi5Txxf8bKtGhR_HbPTyAg.woff2') format('woff2');
+}
+
+@theme inline {
+  --color-background: #0a0a0a;
+  --color-foreground: #f5f5f5;
+  --color-surface: rgb(255 255 255 / 0.03);
+  --color-surface-hover: rgb(255 255 255 / 0.06);
+  --color-border: rgb(255 255 255 / 0.1);
+  --color-border-subtle: rgb(255 255 255 / 0.05);
+  --color-accent: #a78b71;
+  --color-accent-light: #c9b8a0;
+  --color-accent-hover: #e8d5b7;
+  --color-warning: #e8d5b7;
+  --color-success: #4ade80;
+  --color-error: #f87171;
+  --color-muted: rgb(255 255 255 / 0.35);
+  --color-muted-foreground: rgb(255 255 255 / 0.55);
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-mono: 'JetBrains Mono', monospace;
 }
 
 * {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
-
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-  font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
-  background-color: var(--mc-bg);
-  color: var(--mc-text);
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  font-weight: 400;
+  overscroll-behavior: none;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+/* Dot grid overlay */
+.bg-dots {
+  background-image: radial-gradient(circle, rgb(255 255 255 / 0.08) 1px, transparent 1px);
+  background-size: 32px 32px;
 }
 
-::-webkit-scrollbar-track {
-  background: var(--mc-bg-secondary);
+/* Glassmorphism card */
+.glass {
+  background: rgb(255 255 255 / 0.03);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgb(255 255 255 / 0.1);
 }
 
-::-webkit-scrollbar-thumb {
-  background: var(--mc-border);
-  border-radius: 4px;
+/* Gold glow */
+.glow-gold {
+  box-shadow: 0 0 80px rgb(167 139 113 / 0.15);
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: var(--mc-text-secondary);
-}
-
-/* Status badge styles */
-.status-standby {
-  @apply bg-mc-bg-tertiary text-mc-text-secondary border border-mc-border;
-}
-
-.status-working {
-  @apply bg-mc-accent-green/20 text-mc-accent-green border border-mc-accent-green/50;
-}
-
-.status-offline {
-  @apply bg-mc-accent-red/20 text-mc-accent-red border border-mc-accent-red/50;
-}
-
-/* Priority badge styles */
-.priority-low {
-  @apply bg-mc-text-secondary/20 text-mc-text-secondary;
-}
-
-.priority-normal {
-  @apply bg-mc-accent/20 text-mc-accent;
-}
-
-.priority-high {
-  @apply bg-mc-accent-yellow/20 text-mc-accent-yellow;
-}
-
-.priority-urgent {
-  @apply bg-mc-accent-red/20 text-mc-accent-red;
-}
-
-/* Task status column colors */
-.column-inbox {
-  @apply border-t-mc-accent-pink;
-}
-
-.column-assigned {
-  @apply border-t-mc-accent-yellow;
-}
-
-.column-in_progress {
-  @apply border-t-mc-accent;
-}
-
-.column-review {
-  @apply border-t-mc-accent-purple;
-}
-
-.column-done {
-  @apply border-t-mc-accent-green;
-}
-
-/* Animations */
-@keyframes pulse-soft {
+/* Breathing animation for working agents */
+@keyframes breathe {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+  50% { opacity: 0.6; }
+}
+.animate-breathe {
+  animation: breathe 2.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
-.animate-pulse-soft {
-  animation: pulse-soft 2s ease-in-out infinite;
-}
-
+/* Feed slide-in */
 @keyframes slide-in {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-
 .animate-slide-in {
-  animation: slide-in 0.2s ease-out;
+  animation: slide-in 400ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Glow effect for online status */
-.online-glow {
-  box-shadow: 0 0 10px var(--mc-accent-green), 0 0 20px var(--mc-accent-green);
+/* Pulse for live indicator */
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.animate-live {
+  animation: live-pulse 2s ease-in-out infinite;
+}
+
+/* Active press */
+.press-scale {
+  transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.press-scale:active {
+  transform: scale(0.97);
+}
+
+/* Hover glow on cards */
+.card-hover {
+  transition: border-color 300ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.card-hover:hover {
+  border-color: rgb(167 139 113 / 0.3);
+  box-shadow: 0 0 40px rgb(167 139 113 / 0.08);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgb(255 255 255 / 0.1); border-radius: 2px; }
+
+/* Safe area padding for PWA */
+.safe-bottom {
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 0.5rem);
+}
+
+/* Label utility — wide-tracked uppercase */
+.label-upper {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
 }

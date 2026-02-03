@@ -1,226 +1,196 @@
-// Core types for Mission Control
+// Gateway protocol types
 
-export type AgentStatus = 'standby' | 'working' | 'offline';
+export interface GatewayMessage {
+  type?: string;
+  id?: string | number;
+  method?: string;
+  params?: Record<string, unknown>;
+  result?: unknown;
+  payload?: unknown;
+  ok?: boolean;
+  error?: { code?: number; message: string };
+  event?: string;
+}
 
-export type TaskStatus = 'inbox' | 'assigned' | 'in_progress' | 'testing' | 'review' | 'done';
+export interface GatewaySessionInfo {
+  id: string;
+  key: string;
+  channel: string;
+  peer?: string;
+  model?: string;
+  status: string;
+  age?: number;
+  updatedAt?: number;
+  totalTokens?: number;
+}
 
-export type TaskPriority = 'low' | 'normal' | 'high' | 'urgent';
+export interface GatewayStatus {
+  sessions: {
+    count: number;
+    recent: GatewaySessionInfo[];
+  };
+  channelSummary: string[];
+  queuedSystemEvents: string[];
+  uptime?: number;
+}
 
-export type MessageType = 'text' | 'system' | 'task_update' | 'file';
+// Agent types
 
-export type ConversationType = 'direct' | 'group' | 'task';
-
-export type EventType =
-  | 'task_created'
-  | 'task_assigned'
-  | 'task_status_changed'
-  | 'task_completed'
-  | 'message_sent'
-  | 'agent_status_changed'
-  | 'agent_joined'
-  | 'system';
+export type AgentStatus = 'idle' | 'working' | 'offline';
 
 export interface Agent {
   id: string;
   name: string;
   role: string;
-  description?: string;
-  avatar_emoji: string;
+  emoji: string;
+  cronJobId: string;
   status: AgentStatus;
-  is_master: boolean;
-  soul_md?: string;
-  user_md?: string;
-  agents_md?: string;
-  created_at: string;
-  updated_at: string;
+  lastActivity?: string;
+  lastActivityTime?: number;
+  settings?: AgentSettings;
 }
+
+// Agent settings types
+
+export interface LLMModel {
+  id: string;
+  name: string;
+  provider: string;
+}
+
+export const LLM_MODELS: LLMModel[] = [
+  { id: 'kimi-coding/kimi-k2.5', name: 'Kimi K2.5', provider: 'Kimi' },
+  { id: 'minimax/MiniMax-M2.1', name: 'MiniMax M2.1', provider: 'MiniMax' },
+  { id: 'google/gemini-3-pro-preview', name: 'Gemini 3 Pro', provider: 'Google' },
+  { id: 'opencode/claude-opus-4-5', name: 'Claude Opus 4.5', provider: 'OpenCode' },
+];
+
+export interface AgentSettings {
+  // Server-side (via gateway RPC)
+  model?: string;
+  systemPrompt?: string;
+  temperature?: number;
+  heartbeatMs?: number;
+  enabled?: boolean;
+}
+
+// Cron job types
+
+export interface CronJobSchedule {
+  kind: 'every' | 'cron';
+  everyMs?: number;
+  expr?: string;
+  tz?: string;
+}
+
+export interface CronJobState {
+  nextRunAtMs?: number;
+  lastRunAtMs?: number;
+  lastStatus?: string;
+  lastDurationMs?: number;
+}
+
+export interface CronJob {
+  id: string;
+  name: string;
+  enabled: boolean;
+  schedule: CronJobSchedule;
+  sessionTarget: string;
+  wakeMode: string;
+  payload: {
+    kind: string;
+    message?: string;
+    text?: string;
+    channel?: string;
+  };
+  isolation?: {
+    postToMainPrefix?: string;
+    postToMainMode?: string;
+    postToMainMaxChars?: number;
+  };
+  state: CronJobState;
+  createdAtMs: number;
+  updatedAtMs: number;
+}
+
+export interface CronJobsFile {
+  version: number;
+  jobs: CronJob[];
+}
+
+// Chat types
+
+export interface ChatMessage {
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  timestamp: string;
+}
+
+// Feed types
+
+export interface FeedItem {
+  id: string;
+  timestamp: number;
+  source: string;
+  summary: string;
+  type?: 'cron' | 'session' | 'telegram' | 'gateway' | 'error' | 'activity';
+  taskId?: string;
+}
+
+// Task board types (Convex-backed, 5-state flow)
+
+export type TaskStatus = 'inbox' | 'assigned' | 'in_progress' | 'review' | 'done';
+
+export type TaskPriority = 'low' | 'medium' | 'high' | 'urgent';
 
 export interface Task {
-  id: string;
+  _id: string;
   title: string;
   description?: string;
+  assigneeIds: string[];
+  createdBy?: string;
   status: TaskStatus;
   priority: TaskPriority;
-  assigned_agent_id?: string;
-  created_by_agent_id?: string;
-  business_id: string;
-  due_date?: string;
-  created_at: string;
-  updated_at: string;
-  // Joined fields
-  assigned_agent?: Agent;
-  created_by_agent?: Agent;
-}
-
-export interface Conversation {
-  id: string;
-  title?: string;
-  type: ConversationType;
-  task_id?: string;
-  created_at: string;
-  updated_at: string;
-  // Joined fields
-  participants?: Agent[];
-  last_message?: Message;
+  createdAt: number;
+  updatedAt: number;
 }
 
 export interface Message {
-  id: string;
-  conversation_id: string;
-  sender_agent_id?: string;
+  _id: string;
+  taskId: string;
+  fromAgentId: string;
   content: string;
-  message_type: MessageType;
-  metadata?: string;
-  created_at: string;
-  // Joined fields
-  sender?: Agent;
+  mentions: string[];
+  createdAt: number;
 }
 
-export interface Event {
-  id: string;
-  type: EventType;
-  agent_id?: string;
-  task_id?: string;
+export interface Activity {
+  _id: string;
+  type: string;
+  agentId?: string;
+  taskId?: string;
   message: string;
-  metadata?: string;
-  created_at: string;
-  // Joined fields
-  agent?: Agent;
-  task?: Task;
+  createdAt: number;
 }
 
-export interface Business {
-  id: string;
-  name: string;
-  description?: string;
-  created_at: string;
-}
-
-export interface OpenClawSession {
-  id: string;
-  agent_id: string;
-  openclaw_session_id: string;
-  channel?: string;
-  status: string;
-  session_type: 'persistent' | 'subagent';
-  task_id?: string;
-  ended_at?: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export type ActivityType = 'spawned' | 'updated' | 'completed' | 'file_created' | 'status_changed';
-
-export interface TaskActivity {
-  id: string;
-  task_id: string;
-  agent_id?: string;
-  activity_type: ActivityType;
-  message: string;
-  metadata?: string;
-  created_at: string;
-  // Joined fields
-  agent?: Agent;
-}
-
-export type DeliverableType = 'file' | 'url' | 'artifact';
-
-export interface TaskDeliverable {
-  id: string;
-  task_id: string;
-  deliverable_type: DeliverableType;
+export interface Document {
+  _id: string;
   title: string;
-  path?: string;
-  description?: string;
-  created_at: string;
-}
-
-// API request/response types
-export interface CreateAgentRequest {
-  name: string;
-  role: string;
-  description?: string;
-  avatar_emoji?: string;
-  is_master?: boolean;
-  soul_md?: string;
-  user_md?: string;
-  agents_md?: string;
-}
-
-export interface UpdateAgentRequest extends Partial<CreateAgentRequest> {
-  status?: AgentStatus;
-}
-
-export interface CreateTaskRequest {
-  title: string;
-  description?: string;
-  priority?: TaskPriority;
-  assigned_agent_id?: string;
-  created_by_agent_id?: string;
-  business_id?: string;
-  due_date?: string;
-}
-
-export interface UpdateTaskRequest extends Partial<CreateTaskRequest> {
-  status?: TaskStatus;
-}
-
-export interface SendMessageRequest {
-  conversation_id: string;
-  sender_agent_id: string;
   content: string;
-  message_type?: MessageType;
-  metadata?: string;
+  type: 'note' | 'spec' | 'report' | 'artifact';
+  taskId?: string;
+  createdBy?: string;
+  createdAt: number;
+  updatedAt: number;
 }
 
-// OpenClaw WebSocket message types
-export interface OpenClawMessage {
-  id?: number;
-  method?: string;
-  params?: Record<string, unknown>;
-  result?: unknown;
-  error?: { code: number; message: string };
-}
-
-export interface OpenClawSessionInfo {
-  id: string;
-  channel: string;
-  peer?: string;
-  model?: string;
-  status: string;
-}
-
-// OpenClaw history message format (from Gateway)
-export interface OpenClawHistoryMessage {
-  role: 'user' | 'assistant' | 'system';
+export interface Notification {
+  _id: string;
+  mentionedAgentId: string;
+  fromAgentId: string;
+  taskId: string;
+  messageId: string;
   content: string;
-  timestamp?: string;
-}
-
-// Agent with OpenClaw session info (extended for UI use)
-export interface AgentWithOpenClaw extends Agent {
-  openclawSession?: OpenClawSession | null;
-}
-
-// Real-time SSE event types
-export type SSEEventType =
-  | 'task_updated'
-  | 'task_created'
-  | 'task_deleted'
-  | 'activity_logged'
-  | 'deliverable_added'
-  | 'agent_spawned'
-  | 'agent_completed';
-
-export interface SSEEvent {
-  type: SSEEventType;
-  payload: Task | TaskActivity | TaskDeliverable | {
-    taskId: string;
-    sessionId: string;
-    agentName?: string;
-    summary?: string;
-    deleted?: boolean;
-  } | {
-    id: string;  // For task_deleted events
-  };
+  delivered: boolean;
+  createdAt: number;
 }

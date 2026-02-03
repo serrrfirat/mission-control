@@ -1,71 +1,90 @@
-# Convex Database Setup
+# Welcome to your Convex functions directory!
 
-## Installation
+Write your Convex functions here.
+See https://docs.convex.dev/functions for more.
 
-Convex is already installed in Mission Control. To set up:
+A query function that takes two arguments looks like:
 
-```bash
-cd ~/.openclaw/workspace/mission-control
-npx convex dev
+```ts
+// convex/myFunctions.ts
+import { query } from "./_generated/server";
+import { v } from "convex/values";
+
+export const myQueryFunction = query({
+  // Validators for arguments.
+  args: {
+    first: v.number(),
+    second: v.string(),
+  },
+
+  // Function implementation.
+  handler: async (ctx, args) => {
+    // Read the database as many times as you need here.
+    // See https://docs.convex.dev/database/reading-data.
+    const documents = await ctx.db.query("tablename").collect();
+
+    // Arguments passed from the client are properties of the args object.
+    console.log(args.first, args.second);
+
+    // Write arbitrary JavaScript here: filter, aggregate, build derived data,
+    // remove non-public properties, or create new objects.
+    return documents;
+  },
+});
 ```
 
-This will:
-1. Create a Convex project
-2. Start the development server
-3. Apply the schema
+Using this query function in a React component looks like:
 
-## Environment Variables
-
-Add to `.env.local`:
-
-```bash
-NEXT_PUBLIC_CONVEX_URL=your-convex-url
+```ts
+const data = useQuery(api.myFunctions.myQueryFunction, {
+  first: 10,
+  second: "hello",
+});
 ```
 
-Get your Convex URL from the dashboard or after running `npx convex dev`.
+A mutation function looks like:
 
-## Schema
+```ts
+// convex/myFunctions.ts
+import { mutation } from "./_generated/server";
+import { v } from "convex/values";
 
-The database has 6 tables:
+export const myMutationFunction = mutation({
+  // Validators for arguments.
+  args: {
+    first: v.string(),
+    second: v.string(),
+  },
 
-### agents
-- `name` — Agent name (Jarvis, Shuri, etc.)
-- `role` — Agent role
-- `sessionKey` — OpenClaw session key
-- `status` — idle | active | blocked
+  // Function implementation.
+  handler: async (ctx, args) => {
+    // Insert or modify documents in the database here.
+    // Mutations can also read from the database like queries.
+    // See https://docs.convex.dev/database/writing-data.
+    const message = { body: args.first, author: args.second };
+    const id = await ctx.db.insert("messages", message);
 
-### tasks
-- `title` — Task title
-- `status` — inbox | assigned | in_progress | review | done | blocked
-- `assigneeIds` — Array of agent IDs
-- `priority` — low | normal | high | urgent
+    // Optionally, return a value from your mutation.
+    return await ctx.db.get("messages", id);
+  },
+});
+```
 
-### messages
-- `taskId` — Reference to task
-- `agentId` — Reference to agent
-- `content` — Comment text
+Using this mutation function in a React component looks like:
 
-### activities
-- `type` — Event type (task_created, message_sent, etc.)
-- `agentId` — Who did it
-- `taskId` — Related task
-- `message` — Human-readable description
+```ts
+const mutation = useMutation(api.myFunctions.myMutationFunction);
+function handleButtonPress() {
+  // fire and forget, the most common way to use mutations
+  mutation({ first: "Hello!", second: "me" });
+  // OR
+  // use the result once the mutation has completed
+  mutation({ first: "Hello!", second: "me" }).then((result) =>
+    console.log(result),
+  );
+}
+```
 
-### notifications
-- `agentId` — Target agent
-- `type` — mention | assignment | deadline | review_request
-- `content` — Notification text
-- `read` — Boolean
-
-### subscriptions
-- `agentId` — Subscribed agent
-- `taskId` — Subscribed task
-
-## Functions
-
-All CRUD functions are in `functions.ts`:
-- `getAgents()`, `createAgent()`, `updateAgentStatus()`
-- `getTasks()`, `createTask()`, `updateTaskStatus()`, `assignTask()`
-- `getMessagesByTask()`, `createMessage()`
-- `getActivities()`, `getNotifications()`
-- `subscribeToTask()`, `createDocument()`
+Use the Convex CLI to push your functions to a deployment. See everything
+the Convex CLI can do by running `npx convex -h` in your project root
+directory. To learn more, launch the docs with `npx convex docs`.
